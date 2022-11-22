@@ -1,0 +1,17 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Websocket\Events\Event;
+use {{ useRequestClass }};
+
+class {{ class }} extends Event
+{
+    public array $middleware = [];
+    public $request = {{ requestClass }};
+
+    public function __invoke($event, $userGuard, $userData, $request)
+    {
+        //
+    }
+}

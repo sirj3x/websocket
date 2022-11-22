@@ -1,0 +1,79 @@
+<?php
+
+namespace App\Websocket;
+
+use Sirj3x\Websocket\Controllers\WebsocketWorkerController;
+use Sirj3x\Websocket\Helpers\ParserHelper;
+use Sirj3x\Websocket\Helpers\WebsocketEngineHelper;
+use Workerman\Timer;
+
+class Server extends WebsocketWorkerController
+{
+    protected function onMessage($connection, $data): bool
+    {
+        $input = ParserHelper::decode($data);
+
+        if (!isset($input["event"])) {
+            WebsocketEngineHelper::sendError($connection, 'Event not found.', 404);
+            return false;
+        }
+        $event = $input["event"];
+
+        if (!isset($input["data"])) {
+            $data = [];
+        } else {
+            $data = $input["data"];
+        }
+
+        $listener_key = $input["listener_key"] ?? null;
+
+        // get user guard
+        $userGuard = $this->authenticated_users[$connection->id]["guard"];
+
+        // get user data
+        $userData = $this->getWebsocketUserData($connection->id, false);
+        if (!$userData) {
+            WebsocketEngineHelper::sendError($connection, 'User not found.', 401);
+            return false;
+        }
+
+        // cast to array
+        $userData = $userData->toArray();
+
+        // ##############################################
+        // ################ call event ##################
+        $result = WebsocketWorkerController::callEvent($event, $userGuard, $userData, $data, $connection);
+        if ($result === false) return false;
+        // ##############################################
+        // ##############################################
+
+        if ($listener_key && strlen($listener_key) > 5) {
+            $result = array_merge($result, ['listener_key' => $listener_key]);
+        }
+
+        $connection->send(ParserHelper::encode($result));
+
+        return true;
+    }
+
+    protected function timers($worker)
+    {
+        // $time_interval = 30; // seconds
+        Timer::add(30, function () {
+            // code...
+        });
+    }
+
+    public function setupEvent($connection, $guard, $user)
+    {
+        $data = [];
+
+        // code...
+
+        $connection->send(ParserHelper::encode([
+            'event' => 'setup',
+            'status' => 200,
+            'data' => $data
+        ]));
+    }
+}

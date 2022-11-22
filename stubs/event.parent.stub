@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Websocket\Events;
+
+use Sirj3x\Websocket\Helpers\ResponseHelper;
+
+class Event
+{
+    use ResponseHelper;
+
+    public $middleware = [];
+    public $request = null;
+}

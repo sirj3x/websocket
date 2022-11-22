@@ -1,0 +1,15 @@
+<?php
+
+namespace {{ namespace }};
+
+class {{ class }}
+{
+    public function __invoke($event, $userGuard, $userData, $request): array
+    {
+        //
+
+        return [
+            'status' => 1
+        ];
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "name": "sirj3x/websocket",
+    "description": "Websocket supports HTTP, Websocket, SSL and other custom protocols.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mehdi Hashemi",
+            "email": "sirj3x@gmail.com",
+            "homepage": "https://mhashemi.ir",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "sirj3x@gmail.com"
+    },
+    "require": {
+        "php": ">=7.3",
+        "workerman/workerman": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sirj3x\\Websocket\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+              "JxtServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev"
+}

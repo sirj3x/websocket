@@ -1,0 +1,13 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Websocket\Events\Event;
+
+class {{ class }} extends Event
+{
+    public function __invoke($event, $userGuard, $userData, $request)
+    {
+        //
+    }
+}
