@@ -43,6 +43,12 @@ class WebsocketCommand extends Command
         // set timezone
         date_default_timezone_set(config('app.timezone'));
 
+        // check config is existed
+        if (!config('websocket.ptc_channel_ip') || !is_array(config('websocket.context'))) {
+            $this->error('Can\'t find config file.');
+            return;
+        }
+
         // Create a server And Run worker
         new Server();
 
