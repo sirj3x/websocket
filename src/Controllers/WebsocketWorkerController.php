@@ -2,9 +2,6 @@
 
 namespace Sirj3x\Websocket\Controllers;
 
-use App\Helpers\StringHelper;
-use App\Libraries\DoToken;
-use App\Libraries\Telegram;
 use Channel\Client;
 use Sirj3x\Jxt\JxtToken;
 use Sirj3x\Websocket\Helpers\ParserHelper;
@@ -152,7 +149,7 @@ class WebsocketWorkerController extends Worker
         // create local tcp-server
         $inner_tcp_worker = new Worker("tcp://" . config('websocket.ptc_tcp_ip') . ":" . config('websocket.ptc_tcp_port'));
         $inner_tcp_worker->onMessage = function ($connection, $data) {
-            $data = StringHelper::parseTcpConnectionData($data);
+            $data = WebsocketStringHelper::parseTcpConnectionData($data);
             if ($data) $this->handlePtcData($data);
             $connection->close();
         };

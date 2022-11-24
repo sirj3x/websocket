@@ -4,6 +4,11 @@ namespace Sirj3x\Websocket\Helpers;
 
 class WebsocketStringHelper
 {
+    public static function idsToArray($string): array
+    {
+        return explode(',', $string);
+    }
+
     public static function arrayToIds($array): string
     {
         $number = 1;
@@ -14,5 +19,18 @@ class WebsocketStringHelper
             $number++;
         }
         return $string;
+    }
+
+    public static function parseTcpConnectionData($data)
+    {
+        try {
+            $data = explode('#0#0#', $data);
+            $data = $data[1];
+            $data = explode('#1#1#', $data);
+            $data = $data[0];
+            return json_decode($data, true);
+        } catch (\Exception $exception) {
+            return null;
+        }
     }
 }
