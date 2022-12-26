@@ -8,6 +8,7 @@ Websocket supports HTTP, Websocket, SSL and other custom protocols.
 * PHP >=7.3
 
 ## Install package from local git
+Add the following to the end of `composer.json`
 ```json
 "repositories": {
     "sirj3x/websocket": {
