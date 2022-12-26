@@ -42,6 +42,10 @@ Add the following to the end of `composer.json`
     }
 }
 ```
+and add package name to `require` zone in `composer.json`
+```json
+"sirj3x/websocket": "1.0"
+```
 then run `composer update` to install package
 
 ## Setup
