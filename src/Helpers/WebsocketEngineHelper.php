@@ -33,7 +33,13 @@ class WebsocketEngineHelper
 
     public static function routes(): array
     {
-        return include base_path('routes/websocket.php');
+        $route = [];
+        try {
+            include base_path('routes/websocket.php');
+            return $route->all();
+        } catch (\Exception $exception) {
+            return $route;
+        }
     }
 
     public static function getRouteClass($event)
