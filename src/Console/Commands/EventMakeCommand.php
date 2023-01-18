@@ -76,7 +76,7 @@ class EventMakeCommand extends GeneratorCommand
      */
     protected function resolveStubPath($stub)
     {
-        return $this->laravel->basePath('packages' . DIRECTORY_SEPARATOR . 'sirjex' . DIRECTORY_SEPARATOR . 'websocket' . DIRECTORY_SEPARATOR . $stub);
+        return $this->laravel->basePath('vendor' . DIRECTORY_SEPARATOR . 'sirjex' . DIRECTORY_SEPARATOR . 'websocket' . $stub);
     }
 
     /**
