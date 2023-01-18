@@ -42,7 +42,7 @@ class Server extends WebsocketWorkerController
 
         // ##############################################
         // ################ call event ##################
-        $result = WebsocketWorkerController::callEvent($event, $userGuard, $userData, $data, $connection);
+        $result = WebsocketWorkerController::callEvent($connection, $event, $userGuard, $userData, $data);
         if ($result === false) return false;
         // ##############################################
         // ##############################################
