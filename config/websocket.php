@@ -30,8 +30,8 @@ return [
     ],
 
     // data encryption
-    'data_encryption' => env('WEBSOCKET_ENCRYPTION', false),
-    'data_encryption_secret_key' => env('WEBSOCKET_ENCRYPTION_SECRET_KEY'),
+    'data_encryption' => env('IO_ENCRYPTION', false),
+    'data_encryption_secret_key' => env('IO_ENCRYPTION_SECRET_KEY'),
 
     'middleware' => [
         //
