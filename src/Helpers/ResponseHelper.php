@@ -8,8 +8,8 @@ trait ResponseHelper
 {
     public function success($data = []): array
     {
-        if (config('websocket.data_encryption')) {
-            $data = JxtEncryption::encode(json_encode($data), config('websocket.data_encryption_secret_key'));
+        if (config('websocket.io_encryption')) {
+            $data = JxtEncryption::encode(json_encode($data), config('websocket.io_encryption_secret_key'));
         }
 
         return [
@@ -24,8 +24,8 @@ trait ResponseHelper
             'message' => [$messages]
         ];
 
-        if (config('websocket.data_encryption')) {
-            $data = JxtEncryption::encode($data, config('websocket.data_encryption_secret_key'));
+        if (config('websocket.io_encryption')) {
+            $data = JxtEncryption::encode($data, config('websocket.io_encryption_secret_key'));
         }
 
         return [

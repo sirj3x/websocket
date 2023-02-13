@@ -1,18 +1,18 @@
 <?php
 
-namespace Sirj3x\Websocket\Controllers;
+namespace Sirj3x\Websocket;
 
 use Channel\Client;
-use Sirj3x\Jxt\JxtToken;
-use Sirj3x\Websocket\Helpers\ParserHelper;
-use Sirj3x\Websocket\Helpers\WebsocketEngineHelper;
-use Sirj3x\Websocket\Helpers\WebsocketStringHelper;
 use Exception;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;
-use Workerman\Worker;
+use Sirj3x\Jxt\JxtToken;
+use Sirj3x\Websocket\Helpers\ParserHelper;
+use Sirj3x\Websocket\Helpers\BaseHelper;
+use Sirj3x\Websocket\Helpers\StringHelper;
+use Workerman\Worker as WorkermanWorker;
 
-class WebsocketWorkerController extends Worker
+class Worker extends WorkermanWorker
 {
     // access with user_id
     protected array $websocket_users = [];
@@ -74,7 +74,7 @@ class WebsocketWorkerController extends Worker
     {
         $connection->onWebSocketConnect = function ($connection) {
             if (!isset($_GET["token"])) {
-                WebsocketEngineHelper::sendError($connection, 'Auth token not found.', 401, true);
+                BaseHelper::sendError($connection, 'Auth token not found.', 401, true);
                 return;
             }
 
@@ -82,7 +82,7 @@ class WebsocketWorkerController extends Worker
 
             $user = JxtToken::loginWithToken($token);
             if (!$user) {
-                WebsocketEngineHelper::sendError($connection, 'Token is not valid.', 401, true);
+                BaseHelper::sendError($connection, 'Token is not valid.', 401, true);
                 return;
             }
 
@@ -149,7 +149,7 @@ class WebsocketWorkerController extends Worker
         // create local tcp-server
         $inner_tcp_worker = new Worker("tcp://" . config('websocket.ptc_tcp_ip') . ":" . config('websocket.ptc_tcp_port'));
         $inner_tcp_worker->onMessage = function ($connection, $data) {
-            $data = WebsocketStringHelper::parseTcpConnectionData($data);
+            $data = StringHelper::parseTcpConnectionData($data);
             if ($data) $this->handlePtcData($data);
             $connection->close();
         };
@@ -162,9 +162,9 @@ class WebsocketWorkerController extends Worker
         if (count($data["data"]) == 0) $data["data"] = [];
 
         $validator = Validator::make($data, [
-            'type' => ['required', 'in:exist_event,custom_event'],
+            'type' => ['required', 'in:exist_event'],
             'user_id' => ['required'],
-            'user_guard' => ['required', 'in:' . WebsocketStringHelper::arrayToIds(WebsocketEngineHelper::getGuards())],
+            'user_guard' => ['required', 'in:' . StringHelper::arrayToIds(BaseHelper::getGuards())],
             'event' => ['required_if:type,exist_event', 'string'],
             'listener_key' => ['nullable', 'string'],
             //'data' => ['required', 'array'],
@@ -188,8 +188,6 @@ class WebsocketWorkerController extends Worker
                         $connection = $connectionItem["connection"];
                         if ($type == 'exist_event') {
                             $this->sendToUserExistEvent($connection, $data['event'], $data['user_guard'], $this->getWebsocketUserData($connection->id), $data['data'], $listener_key);
-                        } elseif ($type == 'custom_event') {
-                            $this->sendToUserCustomEvent($connection, $data['data']);
                         }
                     }
                 }
@@ -204,8 +202,6 @@ class WebsocketWorkerController extends Worker
                     $connection = $connectionItem["connection"];
                     if ($type == 'exist_event') {
                         $this->sendToUserExistEvent($connection, $data['event'], $data['user_guard'], $this->getWebsocketUserData($connection->id), $data['data'], $listener_key);
-                    } elseif ($type == 'custom_event') {
-                        $this->sendToUserCustomEvent($connection, $data['data']);
                     }
                 }
 
@@ -219,7 +215,7 @@ class WebsocketWorkerController extends Worker
         if (isset($this->authenticated_users)) {
             if (isset($this->authenticated_users[$connection_id])) {
                 $authenticated_guard = $this->authenticated_users[$connection_id]["guard"];
-                $authenticated_guard_model = WebsocketEngineHelper::getGuardModel($authenticated_guard);
+                $authenticated_guard_model = BaseHelper::getGuardModel($authenticated_guard);
                 $authenticated_user_id = $this->authenticated_users[$connection_id]["user_id"];
                 $query = new $authenticated_guard_model;
                 $user = $query->find($authenticated_user_id);
@@ -232,14 +228,14 @@ class WebsocketWorkerController extends Worker
 
     public static function callEvent($connection, $event, $userGuard, $userData, $data)
     {
-        $event = WebsocketEngineHelper::getRouteClass($event);
+        $event = BaseHelper::getRouteClass($event);
         if ($event === false || !class_exists($event['class'])) {
-            return WebsocketEngineHelper::sendError($connection, 'Event not registered.', 404);
+            return BaseHelper::sendError($connection, 'Event not registered.', 404);
         }
         $class = $event['class'];
 
         /*if ($event['type'] == 'publish' && $connection !== null) {
-            return WebsocketEngineHelper::sendError($connection, 'You are not authorized to call this event.', 401);
+            return BaseHelper::sendError($connection, 'You are not authorized to call this event.', 401);
         }*/
 
         $classIntent = new $class();
@@ -250,7 +246,7 @@ class WebsocketWorkerController extends Worker
             $allMiddleware = config('websocket.middleware');
             foreach ($middleware as $item) {
                 if (!isset($allMiddleware[$item])) {
-                    return WebsocketEngineHelper::sendError($connection, 'Middleware not registered.', 400);
+                    return BaseHelper::sendError($connection, 'Middleware not registered.', 400);
                 }
 
                 $middlewareResult = App::call($allMiddleware[$item], [
@@ -262,15 +258,15 @@ class WebsocketWorkerController extends Worker
                 ]);
 
                 if (!isset($middlewareResult["status"])) {
-                    return WebsocketEngineHelper::sendError($connection, 'Middleware dispatcher error.', 400);
+                    return BaseHelper::sendError($connection, 'Middleware dispatcher error.', 400);
                 }
 
                 if ($middlewareResult["status"] == 0) {
                     if (!isset($middlewareResult["message"])) {
-                        return WebsocketEngineHelper::sendError($connection, 'Middleware dispatcher error.', 400);
+                        return BaseHelper::sendError($connection, 'Middleware dispatcher error.', 400);
                     }
 
-                    return WebsocketEngineHelper::sendError($connection, $middlewareResult["message"], 400);
+                    return BaseHelper::sendError($connection, $middlewareResult["message"], 400);
                 }
             }
         }
@@ -282,7 +278,7 @@ class WebsocketWorkerController extends Worker
             $requestRules = $requestRulesClass->rules($userData);
             $validator = Validator::make($data, $requestRules);
             if ($validator->fails()) {
-                return WebsocketEngineHelper::sendError($connection, $validator->messages(), 400);
+                return BaseHelper::sendError($connection, $validator->messages(), 400);
             }
             $data = self::fieldsOutOfValidator($validator->validated(), $data);
         }
@@ -319,11 +315,6 @@ class WebsocketWorkerController extends Worker
         $connection->send(ParserHelper::encode($result));
     }
 
-    protected function sendToUserCustomEvent($connection, $data)
-    {
-        $connection->send(ParserHelper::encode($data));
-    }
-
     public static function fieldsOutOfValidator($data, $request): array
     {
         $validator = Validator::make([
@@ -348,7 +339,7 @@ class WebsocketWorkerController extends Worker
     {
         // check connection data
         if (!isset($this->authenticated_users[$connection->id])) {
-            WebsocketEngineHelper::sendError($connection, 'Unauthenticated.', 401, true);
+            BaseHelper::sendError($connection, 'Unauthenticated.', 401, true);
             return;
         }
 

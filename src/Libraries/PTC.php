@@ -2,9 +2,9 @@
 
 namespace Sirj3x\Websocket\Libraries;
 
-class WsPushToClient
+class PTC
 {
-    public static function existEvent($user_id, $user_guard, $event, array $request = [])
+    public static function send($user_id, $user_guard, $event, array $request = []): void
     {
         try {
             \Channel\Client::publish('broadcast', [
@@ -18,7 +18,7 @@ class WsPushToClient
         }
     }
 
-    public static function existEventTcp($user_id, $user_guard, $event, array $request = [])
+    public static function sendTcp($user_id, $user_guard, $event, array $request = []): void
     {
         try {
             $params = [
@@ -38,22 +38,6 @@ class WsPushToClient
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
             curl_exec($curl);
             curl_close($curl);
-        } catch (\Exception $exception) {}
-    }
-
-    public static function customEvent($user_id, $user_guard, $event, $data, $statusCode = 200)
-    {
-        try {
-            \Channel\Client::publish('broadcast', [
-                'type' => 'custom_event',
-                'user_id' => $user_id,
-                'user_guard' => $user_guard,
-                'data' => [
-                    'event' => $event,
-                    'status' => $statusCode,
-                    'data' => $data
-                ],
-            ]);
         } catch (\Exception $exception) {
         }
     }

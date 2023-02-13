@@ -2,19 +2,19 @@
 
 namespace App\Websocket;
 
-use Sirj3x\Websocket\Controllers\WebsocketWorkerController;
+use Sirj3x\Websocket\Worker;
 use Sirj3x\Websocket\Helpers\ParserHelper;
-use Sirj3x\Websocket\Helpers\WebsocketEngineHelper;
+use Sirj3x\Websocket\Helpers\BaseHelper;
 use Workerman\Timer;
 
-class Server extends WebsocketWorkerController
+class Server extends Worker
 {
     protected function onMessage($connection, $data): bool
     {
         $input = ParserHelper::decode($data);
 
         if (!isset($input["event"])) {
-            WebsocketEngineHelper::sendError($connection, 'Event not found.', 404);
+            BaseHelper::sendError($connection, 'Event not found.', 404);
             return false;
         }
         $event = $input["event"];
@@ -33,7 +33,7 @@ class Server extends WebsocketWorkerController
         // get user data
         $userData = $this->getWebsocketUserData($connection->id, false);
         if (!$userData) {
-            WebsocketEngineHelper::sendError($connection, 'User not found.', 401);
+            BaseHelper::sendError($connection, 'User not found.', 401);
             return false;
         }
 

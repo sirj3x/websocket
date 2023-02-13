@@ -30,8 +30,8 @@ return [
     ],
 
     // data encryption
-    'data_encryption' => env('IO_ENCRYPTION', false),
-    'data_encryption_secret_key' => env('IO_ENCRYPTION_SECRET_KEY'),
+    'io_encryption' => env('IO_ENCRYPTION', false),
+    'io_encryption_secret_key' => env('IO_ENCRYPTION_SECRET_KEY'),
 
     'middleware' => [
         //

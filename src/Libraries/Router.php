@@ -2,11 +2,11 @@
 
 namespace Sirj3x\Websocket\Libraries;
 
-class Route
+class Router
 {
     public array $routes = [];
 
-    public function publish($name, $class)
+    public function publish($name, $class): void
     {
         $this->routes[$name] = [
             'name' => $name,
@@ -15,7 +15,7 @@ class Route
         ];
     }
 
-    public function subscribe($name, $class)
+    public function subscribe($name, $class): void
     {
         $this->routes[$name] = [
             'name' => $name,

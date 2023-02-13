@@ -2,11 +2,7 @@
 
 namespace Sirj3x\Websocket\Helpers;
 
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Validator;
-
-class WebsocketEngineHelper
+class BaseHelper
 {
     public static function sendError($conn, $message, $statusCode, $disconnect = false)
     {
@@ -48,11 +44,9 @@ class WebsocketEngineHelper
         return $routes[$event] ?? false;
     }
 
-    public static function getUserGuardFromTableRow($row)
+    public static function getUserGuardFromTableRow($row): string
     {
-        $guard = substr($row->getTable(), 0, strlen($row->getTable()) - 1);
-        if ($guard == 'store_customer') return 'customer';
-        return $guard;
+        return substr($row->getTable(), 0, strlen($row->getTable()) - 1);
     }
 
     public static function getGuardModel($guard)

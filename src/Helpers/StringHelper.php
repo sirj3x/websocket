@@ -2,7 +2,7 @@
 
 namespace Sirj3x\Websocket\Helpers;
 
-class WebsocketStringHelper
+class StringHelper
 {
     public static function idsToArray($string): array
     {
