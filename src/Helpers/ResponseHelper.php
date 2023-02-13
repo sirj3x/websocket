@@ -25,7 +25,7 @@ trait ResponseHelper
         ];
 
         if (config('websocket.io_encryption')) {
-            $data = JxtEncryption::encode($data, config('websocket.io_encryption_secret_key'));
+            $data = JxtEncryption::encode(json_encode($data), config('websocket.io_encryption_secret_key'));
         }
 
         return [
