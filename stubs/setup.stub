@@ -70,6 +70,6 @@ class Server extends Worker
 
         // code...
 
-        $connection->send(array_merge(['event' => 'setup'], $this->success($data)));
+        $connection->send(ParserHelper::encode(array_merge(['event' => 'setup'], $this->success($data))));
     }
 }
