@@ -147,7 +147,7 @@ class Worker extends WorkermanWorker
         //###########################
 
         // create local tcp-server
-        $inner_tcp_worker = new Worker("tcp://" . config('websocket.ptc_tcp_ip') . ":" . config('websocket.ptc_tcp_port'));
+        $inner_tcp_worker = new WorkermanWorker("tcp://" . config('websocket.ptc_tcp_ip') . ":" . config('websocket.ptc_tcp_port'));
         $inner_tcp_worker->onMessage = function ($connection, $data) {
             $data = StringHelper::parseTcpConnectionData($data);
             if ($data) $this->handlePtcData($data);
