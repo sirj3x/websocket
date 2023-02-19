@@ -9,11 +9,14 @@ use Illuminate\Support\Facades\Validator;
 use Sirj3x\Jxt\JxtToken;
 use Sirj3x\Websocket\Helpers\ParserHelper;
 use Sirj3x\Websocket\Helpers\BaseHelper;
+use Sirj3x\Websocket\Helpers\ResponseHelper;
 use Sirj3x\Websocket\Helpers\StringHelper;
 use Workerman\Worker as WorkermanWorker;
 
 class Worker extends WorkermanWorker
 {
+    use ResponseHelper;
+
     // access with user_id
     protected array $websocket_users = [];
 
