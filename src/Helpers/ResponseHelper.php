@@ -2,14 +2,14 @@
 
 namespace Sirj3x\Websocket\Helpers;
 
-use Sirj3x\Jxt\JxtEncryption;
+use App\Libraries\EncryptionLibrary;
 
 trait ResponseHelper
 {
     public function success($data = []): array
     {
         if (config('websocket.io_encryption')) {
-            $data = JxtEncryption::encode(json_encode($data), config('websocket.io_encryption_secret_key'));
+            $data = EncryptionLibrary::encrypt(json_encode($data), config('websocket.io_encryption_secret_key'));
         }
 
         return [
@@ -25,7 +25,7 @@ trait ResponseHelper
         ];
 
         if (config('websocket.io_encryption')) {
-            $data = JxtEncryption::encode(json_encode($data), config('websocket.io_encryption_secret_key'));
+            $data = EncryptionLibrary::encrypt(json_encode($data), config('websocket.io_encryption_secret_key'));
         }
 
         return [
