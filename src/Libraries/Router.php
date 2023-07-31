@@ -6,20 +6,10 @@ class Router
 {
     public array $routes = [];
 
-    public function publish($name, $class): void
+    public function register($name, $class): void
     {
         $this->routes[$name] = [
             'name' => $name,
-            'type' => 'publish',
-            'class' => $class
-        ];
-    }
-
-    public function subscribe($name, $class): void
-    {
-        $this->routes[$name] = [
-            'name' => $name,
-            'type' => 'subscribe',
             'class' => $class
         ];
     }
