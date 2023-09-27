@@ -6,51 +6,56 @@ Websocket supports HTTP, Websocket, SSL and other custom protocols.
 
 * Laravel >=6
 * PHP >=7.3
-* Workerman package
 
-## Setup package
-### 1- Install packages
-```shell
-composer require workerman/workerman
-composer require workerman/channel
-```
-
-### 2- Download files
-make directory: `<laravel-project-path>/packages/sirj3x`
-
-clone repository: `git clone <your-repo-link>`
-
-### 3- Add service provider
-add line to: `config/app.php`
-``` php
-'providers' => [
-    /*
-     * Package Service Providers...
-     */
-    Sirj3x\Websocket\WebsocketServiceProvider::class, // add this
-]
-```
-
-### 4- Add package source to composer
-add line to: `composer.json`
-``` php
-"autoload-dev": {
-    "psr-4": {
-        "Tests\\": "tests/",
-        "Sirj3x\\Websocket\\": "packages/sirj3x/websocket/src" // add this
+## Install package from local git
+Add the following to the end of `composer.json`
+```json
+"repositories": {
+    "sirj3x/websocket": {
+        "type": "package",
+        "package": {
+            "name": "sirj3x/websocket",
+            "require": {
+                "php": ">=7.3",
+                "workerman/workerman": "^4.0",
+                "workerman/channel": "^1.1"
+            },
+            "autoload": {
+                "psr-4": {
+                    "Sirj3x\\Websocket\\": "src/"
+                }
+            },
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Sirj3x\\Websocket\\WebsocketServiceProvider"
+                    ]
+                }
+            },
+            "version": "1.0",
+            "source": {
+                "url": "https://gitlab.dornica.local/structure/backend/websocket-laravel-package.git",
+                "type": "git",
+                "reference": "origin/main"
+            }
+        }
     }
-},
+}
 ```
-and run this command: `composer dump-autoload`
+and add package name to `require` zone in `composer.json`
+```json
+"sirj3x/websocket": "1.0"
+```
+then run `composer update` to install package
 
-### 5- Finally
+## Setup
 first time for setup and configure files, run this command:
 ```bash
 php artisan ws:setup
 ```
 
 ## Publish the config
-You can run `vendor:publish` command to have config file of package on this path: `config/jxt.php`
+You can run `vendor:publish` command to have config file of package on this path: `config/websocket.php`
 ``` bash
 php artisan vendor:publish --provider="Sirj3x\Websocket\WebsocketServiceProvider"
 ```

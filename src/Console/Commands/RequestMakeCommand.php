@@ -53,7 +53,7 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected function resolveStubPath($stub)
     {
-        return $this->laravel->basePath('packages' . DIRECTORY_SEPARATOR . 'sirj3x' . DIRECTORY_SEPARATOR . 'websocket' . DIRECTORY_SEPARATOR . $stub);
+        return $this->laravel->basePath('vendor' . DIRECTORY_SEPARATOR . 'sirj3x' . DIRECTORY_SEPARATOR . 'websocket' . $stub);
     }
 
     /**

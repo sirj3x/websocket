@@ -4,9 +4,9 @@ namespace Sirj3x\Websocket\Console\Commands;
 
 use Illuminate\Console\Concerns\CreatesMatchingTest;
 use Illuminate\Console\GeneratorCommand;
-use Illuminate\Filesystem\Filesystem;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputOption;
+use File;
 
 class EventMakeCommand extends GeneratorCommand
 {
@@ -76,7 +76,7 @@ class EventMakeCommand extends GeneratorCommand
      */
     protected function resolveStubPath($stub)
     {
-        return $this->laravel->basePath('packages' . DIRECTORY_SEPARATOR . 'sirjex' . DIRECTORY_SEPARATOR . 'websocket' . DIRECTORY_SEPARATOR . $stub);
+        return $this->laravel->basePath('vendor' . DIRECTORY_SEPARATOR . 'sirj3x' . DIRECTORY_SEPARATOR . 'websocket' . $stub);
     }
 
     /**
@@ -112,7 +112,7 @@ class EventMakeCommand extends GeneratorCommand
     protected function buildParentClassFinally()
     {
         if (!file_exists(app_path('Websocket/Events/Event.php'))) {
-            Filesystem::put(app_path('Websocket/Events/Event.php'), $this->sortImports($this->buildParentClass()));
+            File::put(app_path('Websocket/Events/Event.php'), $this->sortImports($this->buildParentClass()));
         }
     }
 
@@ -364,9 +364,9 @@ class EventMakeCommand extends GeneratorCommand
     protected function getNameInput($forRequest = false)
     {
         if ($forRequest) {
-            return trim($this->argument('name')) . 'Request';
+            return trim($this->argument('name'));
         } else {
-            return trim($this->argument('name')) . 'Event';
+            return trim($this->argument('name'));
         }
     }
 

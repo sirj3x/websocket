@@ -2,19 +2,19 @@
 
 namespace App\Websocket;
 
-use Sirj3x\Websocket\Controllers\WebsocketWorkerController;
+use Sirj3x\Websocket\Worker;
 use Sirj3x\Websocket\Helpers\ParserHelper;
-use Sirj3x\Websocket\Helpers\WebsocketEngineHelper;
+use Sirj3x\Websocket\Helpers\BaseHelper;
 use Workerman\Timer;
 
-class Server extends WebsocketWorkerController
+class Server extends Worker
 {
     protected function onMessage($connection, $data): bool
     {
         $input = ParserHelper::decode($data);
 
         if (!isset($input["event"])) {
-            WebsocketEngineHelper::sendError($connection, 'Event not found.', 404);
+            BaseHelper::sendError($connection, 'Event not found.', 404);
             return false;
         }
         $event = $input["event"];
@@ -33,7 +33,7 @@ class Server extends WebsocketWorkerController
         // get user data
         $userData = $this->getWebsocketUserData($connection->id, false);
         if (!$userData) {
-            WebsocketEngineHelper::sendError($connection, 'User not found.', 401);
+            BaseHelper::sendError($connection, 'User not found.', 401);
             return false;
         }
 
@@ -42,7 +42,7 @@ class Server extends WebsocketWorkerController
 
         // ##############################################
         // ################ call event ##################
-        $result = WebsocketWorkerController::callEvent($event, $userGuard, $userData, $data, $connection);
+        $result = Worker::callEvent($connection, $event, $userGuard, $userData, $data);
         if ($result === false) return false;
         // ##############################################
         // ##############################################
@@ -56,7 +56,7 @@ class Server extends WebsocketWorkerController
         return true;
     }
 
-    protected function timers($worker)
+    protected function timers($worker): void
     {
         // $time_interval = 30; // seconds
         Timer::add(30, function () {
@@ -64,16 +64,12 @@ class Server extends WebsocketWorkerController
         });
     }
 
-    public function setupEvent($connection, $guard, $user)
+    public function setupEvent($connection, $guard, $user): void
     {
         $data = [];
 
         // code...
 
-        $connection->send(ParserHelper::encode([
-            'event' => 'setup',
-            'status' => 200,
-            'data' => $data
-        ]));
+        $connection->send(ParserHelper::encode(array_merge(['event' => 'setup'], $this->success($data))));
     }
 }

@@ -45,7 +45,7 @@ class WebsocketSetupCommand extends Command
 
     private function makeServerClass()
     {
-        $stub = $this->laravel->basePath('packages' . DIRECTORY_SEPARATOR . 'sirj3x' . DIRECTORY_SEPARATOR . 'websocket' . DIRECTORY_SEPARATOR . 'stubs' . DIRECTORY_SEPARATOR . 'setup.stub');
+        $stub = $this->laravel->basePath('vendor' . DIRECTORY_SEPARATOR . 'sirj3x' . DIRECTORY_SEPARATOR . 'websocket' . DIRECTORY_SEPARATOR . 'stubs' . DIRECTORY_SEPARATOR . 'setup.stub');
         $content = File::get($stub);
 
         $targetFileDir = app_path('Websocket');
