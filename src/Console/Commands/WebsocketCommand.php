@@ -4,6 +4,7 @@ namespace Sirj3x\Websocket\Console\Commands;
 
 use App\Websocket\Server;
 use Illuminate\Console\Command;
+use Sirj3x\Websocket\Helpers\StringHelper;
 use Workerman\Worker;
 
 class WebsocketCommand extends Command
@@ -49,11 +50,22 @@ class WebsocketCommand extends Command
             return;
         }
 
-        // Create a server And Run worker
-        new Server();
+        // create websocket
+        $websocketServer = new Server();
 
+        // create channel
         new \Channel\Server(config('websocket.ptc_channel_ip'), config('websocket.ptc_channel_port'));
         //new \Channel\Server('unix:///tmp/workerman-channel.sock');
+
+        // create tcp-server
+        $tcpServer = new Worker("tcp://" . config('websocket.ptc_tcp_ip') . ":" . config('websocket.ptc_tcp_port'));
+        $tcpServer->name = 'TCPServer';
+        $tcpServer->onMessage = function ($connection, $data) use ($websocketServer) {
+            $data = StringHelper::parseTcpConnectionData($data);
+            if ($data) $websocketServer->handlePtcData($data);
+            $connection->close();
+        };
+        $tcpServer->listen();
 
         Worker::runAll();
     }

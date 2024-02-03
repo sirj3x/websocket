@@ -140,7 +140,7 @@ class Worker extends WorkermanWorker
         Client::connect(config('websocket.ptc_channel_ip'), config('websocket.ptc_channel_port'));
         //Client::connect('unix:///tmp/workerman-channel.sock');
 
-        // Subscribe broadcast event .
+        // Subscribe broadcast event
         Client::on('broadcast', function ($data) use ($worker) {
             $this->handlePtcData($data);
         });
@@ -150,16 +150,16 @@ class Worker extends WorkermanWorker
         //###########################
 
         // create local tcp-server
-        $inner_tcp_worker = new WorkermanWorker("tcp://" . config('websocket.ptc_tcp_ip') . ":" . config('websocket.ptc_tcp_port'));
+        /*$inner_tcp_worker = new WorkermanWorker("tcp://" . config('websocket.ptc_tcp_ip') . ":" . config('websocket.ptc_tcp_port'));
         $inner_tcp_worker->onMessage = function ($connection, $data) {
             $data = StringHelper::parseTcpConnectionData($data);
             if ($data) $this->handlePtcData($data);
             $connection->close();
         };
-        $inner_tcp_worker->listen();
+        $inner_tcp_worker->listen();*/
     }
 
-    private function handlePtcData($data): void
+    public function handlePtcData($data): void
     {
         // fix validator for data in exist_event
         if (count($data["data"]) == 0) $data["data"] = [];
@@ -223,6 +223,7 @@ class Worker extends WorkermanWorker
                 $query = new $authenticated_guard_model;
                 $user = $query->find($authenticated_user_id);
                 if ($toArray) $user = $user->toArray();
+                $user["guard"] = $authenticated_guard;
                 return $user;
             }
         }
